@@ -16,7 +16,7 @@ A full list of principles can be found [/metamodel/designPrinciples.md](here).
 
 *Diagram created/updated in LucidChart*
 
-<div style="width: 640px; height: 480px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:640px; height:480px" src="https://lucid.app/documents/embedded/8fcd57f0-6b8c-4ba3-948d-f5ea80b58c0c" id="hdyZRUXqxy~g"></iframe></div>
+<div style="width: 640px; height: 480px; margin: 10px; position: relative;" markdown="1"><iframe allowfullscreen frameborder="0" style="width:640px; height:480px" src="https://lucid.app/documents/embedded/8fcd57f0-6b8c-4ba3-948d-f5ea80b58c0c" id="hdyZRUXqxy~g"></iframe></div>
 
 ## Rationale 
 
