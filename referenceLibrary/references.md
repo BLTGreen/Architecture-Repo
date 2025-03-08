@@ -1,5 +1,13 @@
 # A consolidated list of references and links
 
+## Frameworks
+
+Suggested Frameworks are located here: /metamodel/architectureFramework
+
+## Patterns
+
+Suggested patterns are in the pattern library here: /referenceLibrary/patternLibrary
+
 ## Articles
 * **Zanzibar** - https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/
 
