@@ -27,3 +27,7 @@ For each of these approaches, I'll rate them out of 5 based on the following pri
 | Batch    |         |         |          |         |         |          |         |         |         |
 | Stream   |         |         |          |         |         |          |         |         |         |
 | Hybrid   |         |         |          |         |         |          |         |         |         |
+
+# Final recommendation
+
+There is never a perfect solution, but from the final score we can see
