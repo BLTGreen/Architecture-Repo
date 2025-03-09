@@ -14,8 +14,8 @@ Processing takes place on a set schedule, with large sets of data processed in b
 
 ### Measurability
 
-* We'd need to track latency
-* **Vital to set up alerts around health**
+* The primary metric to track against batch processing is throughput. This'll help us understand the performance efficiency of our batch process.
+* It'll also be vital to set up alerts to let us know immediately when a batch job fails.
 
 ### Maintainability
 
@@ -74,6 +74,8 @@ Processing takes place on a set schedule, with large sets of data processed in b
 # Real-Time Streaming
 Real time streaming is absolutely necessary for anything that requires real-time insights to be surfaced. Anomoly detection, instant reporting, continuous monitoring, etc.
 
+While batch processing takes place once a day, stream processing is more event driven. As it consumes inputs (data and events) it produces outputs (data and events). This allows us to quickly get information from the system of record to the derived data system in a manner that allows for constantly up-to-date information.
+
 **Use Cases**
 
 * Fraud detection
@@ -104,6 +106,14 @@ Real time streaming is absolutely necessary for anything that requires real-time
 A hybrid approach, taking both options into account, would allow us to separate our requirements. We may have some data that requires immediate reporting - for example, the settlements application. But other data publishers/consumers might only need to update once a day. 
 
 In order to approach this from a hybrid perspective, the best plan would be to understand the data requirements. 
+
+In this case, the Systems of Record (aka Data Producers) are two different applications. We can assume the associate business journeys may require different derived data system design and we can furthermore confirm this with the requirements:
+
+*3. Data Consumers:*
+*Public Website (publishes legally required data)*
+*Data Analytics Team (uses data for insights and decision-making)*
+
+
 
 **Use Cases**
 
