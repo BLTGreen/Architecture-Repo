@@ -24,11 +24,17 @@ A full list of principles can be found [/metamodel/designPrinciples.md](here).
 
 I considered two approaches: event sourcing and batch processing. 
 
-After completing a full trade-off analysis, considering design principles, pricing, time to build, etc, I opted for x. 
+After completing a full trade-off analysis, considering design principles, pricing, time to build, etc, I opted for a **Hybrid Approach**. We have some use cases where real time streaming is a necessisty, specifically around our data analytics team. We'll also need real time insights to follow the UK Government's **Secure by Design** principles. 
 
 ### Data Quality
 
 As part of the above diagram, we can see that I'm using 
+
+#### Data Consistency
+
+* Detecting Concurrent Writes
+* Atomic Commit
+* **Change Data Capture**
 
 ### Performance across different business cases
 
