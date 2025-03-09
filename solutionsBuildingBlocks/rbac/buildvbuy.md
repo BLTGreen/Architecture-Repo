@@ -2,9 +2,11 @@
 
 ## Buy Options
 
-* Okta
 * WorkOS
-* AuthID
+* Auth0
+
+| Feature | WorkOS | Auth0 |
+| ------- | ------ | ----- |
 
 ## Build Option
 

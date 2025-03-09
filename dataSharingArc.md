@@ -116,3 +116,4 @@ My suggested transition architecture is to
 
 | NOW | NEXT | LATER |
 |-----|------|-------|
+| Verify ETL process with Data Analytics Team | Allow external stakeholders to subscribe to timeboxed reporting | Integrate a data dashboard |
