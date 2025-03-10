@@ -202,6 +202,12 @@ In this case, the Systems of Record (aka Data Producers) are two different appli
 
 # Security Considerations
 
+There is another option for using both which I've been remiss in not speaking about.
+
+**Utilising Streaming to get all data changes, with Batch Processing as part of managing historic data.**
+
+This would allow us to get **all data** with streaming, then process it in batches for deeper, meaningful insights and security and regulatory tasks such as anonymisation, redaction, et al. 
+
 # Approach Analysis
 
 For each of these approaches, I'll rate them out of 5 based on the following principles (Please look to Design Principles for a further breakdown):
@@ -214,4 +220,4 @@ For each of these approaches, I'll rate them out of 5 based on the following pri
 
 # Final recommendation
 
-There is never a perfect solution, but from the final score and the above overview of strengths v weaknesses we can see that for our use case. **Hybrid** is the right approach. It'll enable the real time streaming required for the data team's use cases, logging, change data capture and alerting (i.e., detect and respond security) while allowing for batch processing where necessary.
+There is never a perfect solution, but from the final score and the above overview of strengths v weaknesses we can see that for our use case. **Hybrid** is the right approach. It'll enable the real time streaming required for the data team's use cases, logging, change data capture and alerting (i.e., detect and respond security) while allowing for batch processing to enable deeper insights.
