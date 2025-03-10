@@ -33,7 +33,7 @@ Kafka cluster knows who is making each request.
 
 **Maintainability**
 
-In order to use Kafka with Azure, we’ll need to configure Event Hubs https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about and 
+Kafka has multiple pre-built connectors, including https://github.com/confluentinc/examples/blob/latest/cloud-etl/connectors/rds.json which would allow us to use RDS as a source and stream all updates.
 
 ## Amazon Kinesis
 
@@ -75,4 +75,4 @@ Because this is a managed AWS product, it hooks into the AWS applications native
 
 # Summary
 
-Kinesis and Kafka are both excellent tools for data streaming. However, I would lean towards Kafka and Event Hubs based on the number of features around resilience and cross-cloud auditing. 
+Kinesis and Kafka are both excellent tools for data streaming. However, I would lean towards Kafka based on the number of features around resilience and cross-cloud auditing, as well as the pre-built connectors which would offload dev effort.
