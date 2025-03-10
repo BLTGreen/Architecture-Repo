@@ -1,10 +1,77 @@
 # Options for Streaming technology
 
+AWS Kinesis and Apache Kafka are both event streaming platforms that facilitate real-time data processing, analytics and integration tasks. They both store and process data.
+
 ## Apache Kafka
+
+**Partitions**
+
+In Kafka, data streams are split into partitions; each of these is an **ordered, replayable, and fault-tolerant sequence of immutable data records, where a data record is defined as a key-value pair.** Each of these is continually appended to a structured commit log. Each of the messages is then assigned a sequential ID number called the offset, which acts as a unique identifier. Similar to how databases have tables to organize and segment datasets, Kafka uses the concept of **topics** to organize related messages. A topic is identified by its name. Best practice is **10 partitions per topic**, and **10,000 partitions per Kafka cluster.**
+
+**Data Retention**
+The most common configuration for how long Kafka will retain messages is **by time**. The default is specified in the configuration file using the log.retention.hours parameter, and it is set to **168 hours, the equivalent of one week**. Another way to expire messages is based on the total number of bytes of messages retained. This value is set using the log.retention.bytesparameter, and it is applied **per partition**. The default is **-1**, meaning that there is no limit and only a time limit is applied. This parameter is useful to set a to positive value if you want to keep the size of a log under a threshold.
+
+We can store data indefinitely by setting both log.retention.hours and log.retention.bytes parameters to -1.
+
+**Throughput**
+Based on underlying infrastructure. Honeycomb reports handling 2 million Kafka messages per second.
+
+**Latency**
+
+Kafka was traditionally used for high throughput rather than latency-sensitive messaging, but it does have a low-latency configuration. Confluent’s latency tests https://www.confluent.io/en-gb/blog/kafka-fastest-messaging-system/ have Kafka performing at 5ms.
+
+**Fault Tolerance** 
+
+Kafka is designed to operate even during failure through distribution and replication. Every topic in Kafka can be configured to have multiple replicas, which will be exact copies of partitions in a topic. One of the replicas will be the **leader** while others will be **followers.** All read/write operations for partitions go through the leader. The followers then replicate the data from the leader. If a broker fails, the partitions for which is was the leader will not be available for read/write. If the partitions have replicas on other brokers, one of those replicas will be promoted to leader, ensuring availability.
+
+Kafka uses **KRaft**. It works using quorum-based architecture (which works on majority rule), so catastrophe should be avoidable. The quorum controller stores its state using an event-sourced storage model, which ensures that the internal state machines can always be accurately recreated.The other controllers within the quorum follow the active controller by responding to the events that it creates and stores in its log. Thus, should one node pause due to a partitioning event, for example, it can quickly catch up on any events it missed by accessing the log when it rejoins. This significantly decreases the unavailability window, improving the worst-case recovery time of the system.
+
+**Security**
+
+Kafka supports mTLS, SSL, ACLs, and SASL. We can encrypt data in transit and use CRC32C checksum for data.
+
+**Maintainability**
+
+In order to use Kafka with Azure, we’ll need to configure Event Hubs https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about 
 
 ## Amazon Kinesis
 
-## Azure Stream Analytics
+**Sharding**
+Kinesis uses shards to partition data. **A shard has a sequence of data records in a stream**. It serves as a base throughput unit of a Kinesis data stream. A shard supports 1 MB/second and 1,000 records per second for writes and 2 MB/second for reads. Just like Kafka, Kinesis uses sequence numbers for records. Each data record has a sequence number that is **unique per partition-key within its shard**.
 
-| Feature | Kafka | Kinesis | Stream Analytics |
-| ------- | ----- | ------- | ---------------- |
+The throughput of a Kinesis data stream is designed to scale without limits. The default shard quota is 500 shards per stream for the following AWS Regions: US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+
+**Data Retention**
+
+A Kinesis data stream stores records from 24 hours by default, up to 8760 hours (365 days). Kinesis Data Streams stops making records inaccessible at the old retention period within several minutes of increasing the retention period. For example, changing the retention period from 24 hours to 48 hours means that records added to the stream 23 hours 55 minutes prior are still available after 24 hours
+
+**Throughput**
+| Quota                                             | On-demand Mode                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Provisioned Mode                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Number of data streams                            | There is no upper quota on the number of streams within your AWS account. By default, you can create up to 50 data streams with the on-demand capacity mode. If you require an increase of this quota, please raise a [support ticket](https://support.console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase).                                                                                                                     | There is no upper quota on the number of streams with the provisioned mode within an account.                                                                                                                                                                                                                                                                                                                                                                                               |
+| Number of shards                                  | There is no upper limit. Number of shards depends on the amount of data ingested and the level of throughput you require. Kinesis Data Streams automatically scales the number of shards in response to changes in data volume and traffic.                                                                                                                                                                                                                    | There is no upper limit. The default shard quota is 500 shards per AWS account for the following AWS Regions: _US East (N. Virginia)_, _US West (Oregon)_, and _Europe (Ireland)_. For all other regions, the default shard quota is 200 shards per AWS account. To request a shards-per-data stream quota increase, see [Requesting a Quota Increase](https://docs.aws.amazon.com/servicequotas/latest/userguide/request-quota-increase.html).                                             |
+| Data stream throughput                            | By default, new data streams created with the on-demand capacity mode have 4 MB/s of write and 8 MB/s of read throughput. As the traffic increases, data streams with the on-demand capacity mode scale up to 200 MB/s of write and 400 MB/s read throughput. If you require an increase to 1 GB/s write and 2GB/s read capacity, submit a [support ticket](https://support.console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase) | There is no upper limit. Maximum throughput depends on the number of shards provisioned for the stream. Each shard can support up to 1 MB/sec or 1,000 records/sec write throughput or up to 2 MB/sec or 2,000 records/sec read throughput. If you need more ingest capacity, you can easily scale up the number of shards in the stream using the AWS Management Console or the [UpdateShardCount](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_UpdateShardCount.html) API. |
+| Data payload size                                 | The maximum size of the data payload of a record before base64-encoding is up to 1 MB.                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| GetRecordstransaction size                        | [GetRecords](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetRecords.html) can retrieve up to 10 MB of data per call from a single shard, and up to 10,000 records per call. Each call to GetRecords is counted as one read transaction. Each shard can support up to five read transactions per second. Each read transaction can provide up to 10,000 records with an upper quota of 10 MB per transaction.                                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Data read rate per shard                          | Each shard can support up to a maximum total data read rate of 2 MB per second via [GetRecords](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetRecords.html). If a call to GetRecords returns 10 MB, subsequent calls made within the next 5 seconds throw an exception.                                                                                                                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Number of registered consumers per data stream    | You can create up to 20 registered consumers (Enhanced Fan-out Limit) for each data stream.                                                                                                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Switching between provisioned and on-demand modes | For each data stream in your AWS account, you can switch between the on-demand and provisioned capacity modes twice within 24 hours.                                                                                                                                                                                                                                                                                                                           | Low                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+**Latency**
+
+According to tests from Bite Sized Serverless, their AWS Kinesis instance in eu-west-1 (Ireland) https://bitesizedserverless.com/bite/serverless-messaging-latency-compared/ hit 1580ms for p99. However, enhanced fan out https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html brought the latency down to 109ms for the same.
+
+**Fault Tolerance**
+
+AWS Has useful patterns and best practices we can lean on while developing disaster recovery processes.
+https://docs.aws.amazon.com/firehose/latest/dev/disaster-recovery-resiliency.html
+
+**Security**
+IAM, Automatically encrypted data, server side encryption.
+
+**Ease of Maintenance**
+Because this is a managed AWS product, it hooks into the AWS applications natively. 
+
+# Summary
+
+Kinesis and Kafka are both excellent tools for data streaming. However, I would lean towards Kafka and Event Hubs based on the number of features around resilience and cross-cloud auditing. 
