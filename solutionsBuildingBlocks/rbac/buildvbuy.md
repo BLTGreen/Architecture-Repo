@@ -56,7 +56,7 @@ This would allow us to grant access to the data required by a user's identity wh
 **Notes**
 If ABAC is enabled in AWS IAM Identity Center, the additional attributes may be passed as session tags directly into AWS accounts.
 
-Cost / Time
 
 # Recommendation
 
+At this point, comparing WorkOS and building via Azure, I would recommend Azure. Using AzureAD would give us a one-stop shop and minimise our attack surfaces (see Secure by Design principles).
