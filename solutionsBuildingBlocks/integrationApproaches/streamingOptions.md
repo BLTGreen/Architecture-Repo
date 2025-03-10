@@ -28,11 +28,12 @@ Kafka uses **KRaft**. It works using quorum-based architecture (which works on m
 
 **Security**
 
-Kafka supports mTLS, SSL, ACLs, and SASL. We can encrypt data in transit and use CRC32C checksum for data.
+Kafka supports mTLS, SSL, ACLs, and SASL. We can encrypt data in transit and use CRC32C checksum for data. Client authentication is provided through either Kerberos or Transport Layer Security (TLS) client certificates, ensuring that the
+Kafka cluster knows who is making each request.
 
 **Maintainability**
 
-In order to use Kafka with Azure, we’ll need to configure Event Hubs https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about 
+In order to use Kafka with Azure, we’ll need to configure Event Hubs https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about and 
 
 ## Amazon Kinesis
 

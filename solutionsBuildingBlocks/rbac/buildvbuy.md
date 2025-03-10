@@ -35,15 +35,43 @@
 
 ## Build Option
 
-We can also use EntraID and Azure to set up our user permissions.
+We can also use Entra ID and Azure to set up our user permissions. In order to ensure synchronicity in a cross-cloud environment we can use the Federated Identity Pattern [/referenceLibrary/patternLibrary/federatedIdentity.md](here) to delegate authorisation to consolidate cross-cloud user management. In the case of this build option, the idea is to utilise **Azure,** specifically **Entra ID** as the user manager.
+
+This would allow us to grant access to the data required by a user's identity while providing a cohesive experience. Entra Permissions Management operates as a Cloud Infrastructure Entitlement Management (CIEM) solution, delivering a framework for minimum access privileges. It enables users to run with a basic permission set and necessitates an approval process for temporary, need-based permission escalation. Entra provides a single interface for overseeing access across the big three cloud providers (Azure, AWS, and Google Cloud) enabling users to tackle the “permissions gap”; the discrepancy between *assigned* and *used* permissions.
 
 Using Azure, users can be controlled programmatically using Terraform, which would offer us IaC control (Please see [/solutionsBuildingBlocks\proofOfConcepts\userControlAzure](here) for a quick PoC).
 
-In order to ensure synchronicity in a cross-cloud environment we can use the Federated Identity Pattern [/referenceLibrary/patternLibrary/federatedIdentity.md](here) to delegate authorisation to consolidate cross-cloud user management. In the case of this build option, the idea is to utilise **Azure,** specifically **EntraID** as the user manager.
+Azure offers us two ways of managing the identity here:
 
-This would allow us to grant access to the data required by a user's identity while providing a cohesive experience.
+* System-assigned: This identity is tied directly to a specific Azure resource. When the resource 
+is deleted, Azure automatically cleans up the credentials and the identity. For example, when an 
+Azure app service is created, it is automatically assigned a managed identity that can be used 
+to request tokens from Azure AD, and the name will be the same as the name of the service.
+* User-assigned: It is also possible to create an identity as a standalone Azure resource that can be 
+assigned to one or more instances of an Azure service. Unlike system-assigned, this identity isn’t 
+automatically deleted when the associated resource is deleted. In this case, multiple resources 
+can share the same permissions as assigned to this identity.
+
+The big benefit of using managed identities for this use case is that they can be used across different 
+applications and services. When applications need to share secrets, they can be stored centrally in a 
+key vault, and managed identities can be granted access. 
 
 ### Provisioning Users
+
+Entra allows for Cross-Tenant Synchronisation, meaning we can automatically replicate users across connected clouds, allowing for automated lifecycle management and smooth user management. Furthermore, with SCIM we can automatically provision users and permissions across both AWS and Azure.
+
+Furthermore, we can use OpenID Connect to manage application access to the AWS cloud from Azure. On the Entra ID side, this involves the registration of an application and includes setup of a service principal. On the AWS side, it requires the establishment of a trust relationship with the registered application and creation of a web identity role.
+
+[Entra to IAM](solutionsBuildingBlocks\modelsAndDiagrams\idDiagrams\entraToIAM.png)
+
+### Assuming Roles
+
+We can use step functions to automate role provision, with EventBridge on AWS listening for IAM events, filtering, and running the appropriate step function to either assign roles or delete.
+
+[step Function Automation](solutionsBuildingBlocks\modelsAndDiagrams\idDiagrams\automatedIAM.png)
+
+#### Security Note on Assuming Roles with OIDC
+Using an OIDC principal without a condition can be overly permissive. To make sure that only the intended identities assume the role, provide an audience (aud) and subject (sub) as conditions in the role trust policy for this IAM role.
 
 ### Setting up SSO
 
@@ -51,12 +79,25 @@ This would allow us to grant access to the data required by a user's identity wh
 1. Within Azure Portal, create a new Enterprise Application
 2. From Enterprise Application Gallery, select AWS IAM Identity Centre
 3. On the Single Sign-On page, select SAML
-4. 
+4. Sign into AWS with an admin account
+5. In IAM Identity Center, choose Settings
+6. Under Identity Source, select Change Identity Source
+7. Choose External Identity Provider
+8. Download your AWS SAML Metadata
+9. Copy the AWS access portal sign-in URL
+10. Back in Azure, click the pencil icon for Basic SAML to edit
+11. Paste the AWS sign-in URL in the Sign on URL section
+12. Upload your AWS metadata file
+13. Still on Azure, check the SAML Signing Certificate section and download your Federation Metadata XML
+14. Back in AWS, in the Identity Provider Metadata section, upload the Federation Metadata XML file you downloaded from Azure.
+15. Save and accept changes
+16. Test users
 
 **Notes**
 If ABAC is enabled in AWS IAM Identity Center, the additional attributes may be passed as session tags directly into AWS accounts.
 
-
 # Recommendation
+
+Based on **Security** and **Auditability** I would recommend running with Entra.
 
 At this point, comparing WorkOS and building via Azure, I would recommend Azure. Using AzureAD would give us a one-stop shop and minimise our attack surfaces (see Secure by Design principles).
