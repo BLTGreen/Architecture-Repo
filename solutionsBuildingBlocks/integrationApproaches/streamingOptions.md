@@ -28,8 +28,7 @@ Kafka uses **KRaft**. It works using quorum-based architecture (which works on m
 
 **Security**
 
-Kafka supports mTLS, SSL, ACLs, and SASL. We can encrypt data in transit and use CRC32C checksum for data. Client authentication is provided through either Kerberos or Transport Layer Security (TLS) client certificates, ensuring that the
-Kafka cluster knows who is making each request.
+Kafka supports mTLS, SSL, ACLs, and SASL. We can encrypt data in transit and use CRC32C checksum for data. Client authentication is provided through either Kerberos or Transport Layer Security (TLS) client certificates, ensuring that the Kafka cluster knows who is making each request.
 
 **Maintainability**
 
@@ -75,4 +74,4 @@ Because this is a managed AWS product, it hooks into the AWS applications native
 
 # Summary
 
-Kinesis and Kafka are both excellent tools for data streaming. However, I would lean towards Kafka based on the number of features around resilience and cross-cloud auditing, as well as the pre-built connectors which would offload dev effort.
+Kinesis and Kafka are both excellent tools for data streaming. However, I would lean towards Kafka based on the number of features around resilience and cross-cloud auditing, as well as the pre-built connectors which would offload dev effort. As it's an open source tool, it also gives us a bit of modularity for future proofing. 

@@ -133,7 +133,7 @@ We can utilise Entra ID and IAM roles to ensure best practises here.
 * **Quick reactions**
 
 ## Weaknesses
-e
+
 * We need to ensure producers never send messages faster than a subscriber can process them - do we want to set up a queue? Or allow the subscriber to scale?
 
 # Hybrid
