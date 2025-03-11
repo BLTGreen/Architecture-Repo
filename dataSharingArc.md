@@ -17,7 +17,9 @@ A full list of principles can be found [/metamodel/designPrinciples.md](here). T
 I selected the following Frameworks to help determine this architecture. For more information, please check metamodel -> architectureFramework in the associated repository.
 
 **AWS Well Architected** - AWS Well Architected is the backbone of a good AWS architecture. Its guiding principles helped me determine the best patterns and technologies to use.
+
 **Azure Well Architected** - Much as above, with the benefit that AWS Well Architected and Azure Well Architected (and, beyond these two, Google Cloud Well-Architected Framework) largely align!
+
 **TOGAF** - I used mostly principles from TOGAF 10 in selecting processes and diagrams. However, there is little difference between TOGAF 9.x and TOGAF 10. I selected TOGAF for its flexibility and in-depth focus on delivery
 
 ### Potential Future Frameworks
@@ -26,7 +28,7 @@ Given the differences in data needs between the data analytics team and external
 
 # Target Architecture 
 
-[Target](/solutionsBuildingBlocks/modelsAndDiagrams/solution/LCCC%20Test.png)
+![Target](/solutionsBuildingBlocks/modelsAndDiagrams/solution/LCCC%20Test.png)
 
 *Diagram created/updated in LucidChart*
 
@@ -82,6 +84,8 @@ For **Streaming Performance**, Kafka has published the following figures:
 
 https://developer.confluent.io/learn/kafka-performance/
 
+| Feature | Speed |
+| ------- | ----- |
 |Peak Throughput |605 MB/s |
 |p99 Latency | 5 ms (200 MB/s load) |
 
@@ -120,7 +124,7 @@ We have to consider a number of challenges whenever something new is added to th
 ### Environments
 
 * It's very challenging to hold a Dev-UAT-Prod mindset with data warehouses. Due to how expensive it is to stream and process data, having extra environments may feel like wasted money. With this design, I've tried to aim for the following strategy:
-  * **Production Only Data Warehouse** - this means that only privileged users have access to the data warehouse in production. 
+  * **Production Only Data Warehouse** - with only privileged users having access to the data warehouse in production. 
   * To mitigate any resiliency risk, we **must ensure** the Data Warehouse is IaC. 
 * The aim is to keep the rest of the infrastructure through the other environments (dev/UAT) to ensure unit tests and integration tests can be carried out.
 
@@ -128,7 +132,7 @@ We have to consider a number of challenges whenever something new is added to th
 
 Using fine grained Roles Based Access Controls via Entra (please see suggested roles below), we can ensure that only privileged users have access to necessary information. 
 
-**Anonymisation** - If we ever need to publish a report or any data on the public facing website that might contain personal details, we can anonymise it. We can use Batch Processing for this, setting up an ETL pipeline using tools such as **Amazon Macie** to discover and redact sensitive data.
+**Anonymisation** - We can use Batch Processing for this, setting up an ETL pipeline using tools such as **Amazon Macie** to discover and redact sensitive data.
 
 * As a note, we may wish to perform anonymisation on all PII before it leaves our AWS environment. In this case, we can use Single Message Transforms: https://docs.confluent.io/kafka-connectors/transforms/current/overview.html Using the **Mask Field** Transform (https://docs.confluent.io/kafka-connectors/transforms/current/maskfield.html#maskfield) we can mask details such as name, age, financial records, etc, before they reach Azure Warehouse.
 
@@ -157,7 +161,21 @@ Solution Building Blocks are the research, reusable patterns, analysis and trade
 
 ## Architecture Models
 
-I've selected some architectural models from the TOGAF ADM to illustrate parts of my discovery into this ADD. I've placed them under headers aligned to TOGAF phases. I've included the tailored ADM [/metamodel/architectureFramework/tailoredTOGAFADM.md](here).
+I've selected some architectural models from the TOGAF ADM to illustrate parts of my discovery into this ADD. Given more time, I would add the following to mitigate any unknowns:
+
+* Application Interaction Diagram
+* Application/Technology Matrix
+* Conceptual data model
+* Data Entity/Data Component Catalog
+* Data Lifecycle Diagram
+* Data Dissemination Diagram
+* Data Security Diagram
+* Enterprise Manageability Diagram
+* Application Communication Diagram
+* Technology Standards Catalog
+* Environments and Locations Diagram
+
+I've included the suggested tailored ADM [/metamodel/architectureFramework/tailoredTOGAFADM.md](here).
 
 ## User Access
 
@@ -281,7 +299,7 @@ I've listed below impacts that are unknown to me. If I were to begin this projec
 
 * **Event Storming** - In order to understand a full view of the user journeys, I'd like to run an Event Storming workshop. As I've included event-driven elements in this architecture and have suggested Domain Driven Design as a framework, this'll help me verify my approach. I'll need stakeholders from across the business for this, specifically: product, engineering, data, security, compliance, customer operations, IT ops.
 * **Enterprise Data Models** - If I can get access to an EDM, this'll allow me to understand our universal data model and any gaps.
-* **Documenting As-Is Processes** - If I can get these documented, I can build an appropriate gap analysis between as-is state and target architecture. 
+* **Documenting As-Is Processes** - If I can get these documented, I can build an appropriate gap analysis between as-is state and target architecture. I can utilise the deliverables I called out under Architecture Models to verify as-is processes and validate the target.
 
 With the above, I can move the *unknown impacts* to *known impacts*, or mitigate them entirely.
 
@@ -303,6 +321,13 @@ Furthermore, we can use OpenID Connect to manage application access to the AWS c
 
 ## Threat Model
 
+| Threat | Likelihood | Impact | Rating | Action |
+| ------ | ---------- | ------ | ------ | ------ |
+| Miscongifigured authentication | Unlikely | Significant | Amber | Always enable SSL and mTLS where possible |
+| Misconfigured ACLs | Unlikely | Significant | Amber | Follow least privilege principles to reduce any attack vectors |
+| Inadequate logging | Medium | Medium | Amber | Perform regular security and logging audits to ensure logging is adequate for security/compliance/engineering/DevOps stakeholders. |
+| Man in the Middle Attack | Unlikely | Significant | Amber | Always connect to API over HTTPS using HMAC |
+
 # Disaster Recovery
 
 Disaster recovery is going to be super vital here due to a single production Data Warehouse. This is what I would suggest:
@@ -322,6 +347,16 @@ We can utilise Azure tools to back up the Data Warehouse. https://learn.microsof
 
 * We need to make sure there's a testable runbook in place for our streaming service so that in the case of business continuity interruptions, any engineer has the knowledge to swiftly bring the service back online.
 * We should also ensure we have a library of playbooks for specific incidents, i.e., **Broker not Available**, **Leader not Available**
+
+# Design Principles
+
+I have mapped out the standards required in the brief under headers here: /metamodel/designPrinciples.md. Here's a quick description of how this architecture meets them:
+
+| Measurability | Scalability | Security | Cost | Availability | Consistency | Auditability |  
+| ------------- | ----------- | -------- | ---- | ------------ | ----------- | ------------ | 
+| High levels of cross-cloud measurability available through pushing CloudTrail/CloudWatch logs to Azure Sentinel |  Event Streaming a highly scalable solution, placing batch processing within Fargate also allowing us to scale up/down as need be   |  Using least privilege principles and RBAC/ABAC keeps us super secure   |  Cost tracked with tools like AWS Budgets  | Streaming allows for immediately available data |  High levels of data consistency  |  Audit logs provided by CloudTrail and Entra ID   | 
+|  Azure Sentinel helps us to define a Detect and Respond architecture    | Using step functions and STS to auto-provision users on AWS allows for programmatic provision, opening up scale  |  mTLS, SSO and SSL as standard   |          | Shared responsibility model in the cloud means availability of our resources is high  |    Disaster recovery and threat model taken into account at point of design     |  Designing security controls that ensure users are managed cross-platform   |  
+| Metrics defined to track performance efficiency    |   Flexible architecture responsive to scale  |  Minimising attack surfaces by aiming to use cloud provider-managed security services   |          |         |         |          |  
 
 # Suggested Roadmap
 
