@@ -26,9 +26,11 @@ Given the differences in data needs between the data analytics team and external
 
 # Target Architecture 
 
+[Target](/solutionsBuildingBlocks/modelsAndDiagrams/solution/LCCC%20Test.png)
+
 *Diagram created/updated in LucidChart*
 
-<div style="width: 640px; height: 480px; margin: 10px; position: relative;" markdown="1"><iframe allowfullscreen frameborder="0" style="width:640px; height:480px" src="https://lucid.app/documents/embedded/8fcd57f0-6b8c-4ba3-948d-f5ea80b58c0c" id="hdyZRUXqxy~g"></iframe></div>
+Link: https://lucid.app/documents/embedded/8fcd57f0-6b8c-4ba3-948d-f5ea80b58c0c
 
 ## Rationale 
 

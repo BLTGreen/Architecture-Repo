@@ -22,6 +22,7 @@ Processing takes place on a set schedule, with large sets of data processed in b
 * Batch jobs are easy to maintain and are often seen as "set it and forget it"
 * Static, no changes, little upkeep
 * Observability/measurability a vital part of this to ensure immediate alerting should batch job fail to run
+* Any issues with the code and a roll-back is simple if we have all the data in one big batch.
 
 ### Scalability
 
@@ -99,13 +100,16 @@ While batch processing takes place once a day, stream processing is more event d
 * We can utilise scaling patterns such as **Fan-Out** or **Load Balancing** to ensure scale in our streams.
 
 ### Security
+
+We can utilise Entra ID and IAM roles to ensure best practises here.
+
 ### Cost-Effectiveness
 
-* Streaming can become quite expensive based on the data being collected. 
+* This will be dependant on the data type/size collected. 
 
 ### Speed to Develop
 
-
+* This will be slower than a batch processing option. However, we can speed this up by selecting the right technology that takes this into account (i.e., Kafka connectors).
 
 ### Data availability 
 
@@ -129,8 +133,7 @@ While batch processing takes place once a day, stream processing is more event d
 * **Quick reactions**
 
 ## Weaknesses
-
-* A subscriber continuously polling a publisher may become expensive
+e
 * We need to ensure producers never send messages faster than a subscriber can process them - do we want to set up a queue? Or allow the subscriber to scale?
 
 # Hybrid
@@ -149,27 +152,21 @@ In this case, the Systems of Record (aka Data Producers) are two different appli
 
 **Use Cases**
 
-* 
+* Using streaming to pull all events
+* Using batch processing as part of an ETL pipeline to transform data
+* Using batch processing to move back-ups into Azure
 
 ### Measurability
 
-
+* We can use the same options for Batch Processing and Streaming.
 
 ### Maintainability
 
-
+* Although this means maintaining both, I do not foresee any major impact to a maintenance record.
 
 ### Scalability
 
-
-
-### Security
-
-
-
-### Cost-Effectiveness
-
-* 
+* Streaming allows for flexible, scalable architecture.
 
 ### Speed to Develop
 
@@ -179,6 +176,7 @@ In this case, the Systems of Record (aka Data Producers) are two different appli
 ### Data availability 
 
 * Where we **require** highly available data we will have highly available data.
+* This holistic approach will allow us to capture a full view of the data landscape.
 
 ### Consistency
 
@@ -188,6 +186,10 @@ In this case, the Systems of Record (aka Data Producers) are two different appli
 
 * **Change Data Capture** - Having a mixture of streaming and batch processing would allow us to keep an eye on all changes occurring not just within the applications but the *systems of record themselves*. This would be useful from a security standpoint (identifying malicious actors/incorrectly assigned authentication) but also for data consistency.
   *  We can use Bottled Water or Debezium to keep track of CDC by pointing them at our Postgres WAL.
+
+#### A Note on Immutability
+
+* Whatever has occurred to create the current state, event streaming will hold the sequence of events that led to the change as well as the change itself. This, coupled with Kafka's append-only event ledger, means that we have an immutable record of our data sources.
 
 ## Strengths
 
